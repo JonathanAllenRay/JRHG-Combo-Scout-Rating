@@ -82,11 +82,15 @@ class Score(object):
     def calculate_damage_efficiency_score(self):
         damage_done = self.player_stat('dmg')
         damage_taken = self.player_stat('dt')
+        if damage_taken == 0:
+            return 25.0
         return self.scale_score(0.5, 1.85, 25.0, damage_done / damage_taken)
 
     def calculate_kd_score(self):
         kills = self.player_stat('kills')
         deaths = self.player_stat('deaths')
+        if deaths == 0:
+            return 25.0
         return self.scale_score(0.5, 2.85, 25.0, float(kills) / deaths)
 
     def calculate_med_diff_score(self, scout_medic_combos):
@@ -166,7 +170,11 @@ class Score(object):
 
     def get_heal_percent(self, medic):
         heals_received = self.player_stat('hr')
-        heals_total = self.log.players[medic]['heal']
+        heals_total = 0.0
+        if medic in self.log.players.keys():
+            heals_total = self.log.players[medic]['heal']
+        else:
+            return 20.00 #Safe estimate
         return (float(heals_received) / heals_total) * 100.0 
 
     def player_stat(self, stat):
@@ -174,3 +182,31 @@ class Score(object):
 
     def get_alias(self):
         return self.log.names[self.player]
+
+def score_summary(score):
+    if score <= 10.00:
+        return "Apocalyptic"
+    if score <= 20.00:
+        return "Terrible"
+    if score <= 30.00:
+        return "Bad"
+    if score <= 40.00:
+        return "Poor"
+    if score <= 45.00:
+        return "Sub-Par"
+    if score <= 55.00:
+        return "Average"
+    if score <= 60.00:
+        return "Good"
+    if score <= 65.00:
+        return "Great"
+    if score <= 70.00:
+        return "Very Good"
+    if score <= 80.00:
+        return "Excellent"
+    if score <= 90.00:
+        return "Masterful"
+    if score <= 99.99:
+        return "Ascended"
+    if score == 100.00:
+        return "Perfect"

@@ -16,27 +16,59 @@ def main():
     damage = 0.0
     kill_participation = 0.0
     heal_efficiency = 0.0
-    log_list = LogList(player=sys.argv[1], limit=sys.argv[2], offset=sys.argv[3])
-    other_steam_id = sys.argv[4]
-    for log in log_list.logs:
-        log_number += 1
-        print('Log # ' + str(log_number) + '/' + str(len(log_list.logs)))
-        next_log = Log(log['id'])
-        scout_medic_combos = next_log.get_scout_medic_combos()
-        if other_steam_id in scout_medic_combos.keys():
-            score = Score('', other_steam_id, log=next_log)
-            score.calculate_score()
-            count += 1
-            score_total += score.score
-            damage_efficiency += score.damage_efficiency
-            kill_death += score.kill_death
-            med_diff += score.med_diff
-            med_diff_ratio += score.med_diff_ratio
-            round_diff += score.round_diff
-            frags += score.frags
-            damage += score.damage
-            kill_participation += score.kill_participation
-            heal_efficiency += score.heal_efficiency
+    if sys.argv[1] == "-f":
+        file1 = open(sys.argv[2], 'r')
+        player = sys.argv[3]
+        while True:
+            # Get next line from file
+            line = file1.readline()
+
+            # if line is empty
+            # end of file is reached
+            if not line:
+                break
+
+            log = Log(id_from_logs_url(line))
+            scout_medic_combos = log.get_scout_medic_combos()
+            for scout in scout_medic_combos:
+                if player == scout:
+                    print("Calculating log " + line)
+                    score = Score(line, player)
+                    score.calculate_score()
+                    count += 1
+                    score_total += score.score
+                    damage_efficiency += score.damage_efficiency
+                    kill_death += score.kill_death
+                    med_diff += score.med_diff
+                    med_diff_ratio += score.med_diff_ratio
+                    round_diff += score.round_diff
+                    frags += score.frags
+                    damage += score.damage
+                    kill_participation += score.kill_participation
+                    heal_efficiency += score.heal_efficiency
+        file1.close()
+    else:   
+        log_list = LogList(player=sys.argv[1], limit=sys.argv[2], offset=sys.argv[3])
+        other_steam_id = sys.argv[4]
+        for log in log_list.logs:
+            log_number += 1
+            print('Log # ' + str(log_number) + '/' + str(len(log_list.logs)))
+            next_log = Log(log['id'])
+            scout_medic_combos = next_log.get_scout_medic_combos()
+            if other_steam_id in scout_medic_combos.keys():
+                score = Score('', other_steam_id, log=next_log)
+                score.calculate_score()
+                count += 1
+                score_total += score.score
+                damage_efficiency += score.damage_efficiency
+                kill_death += score.kill_death
+                med_diff += score.med_diff
+                med_diff_ratio += score.med_diff_ratio
+                round_diff += score.round_diff
+                frags += score.frags
+                damage += score.damage
+                kill_participation += score.kill_participation
+                heal_efficiency += score.heal_efficiency
     print('Damage Efficiency: ' + str(round(damage_efficiency / count, 2)) + '/25')
     print('Kill/Death: ' + str(round(kill_death / count, 2)) + '/25')
     print('Med Survivability: ' + str(round(med_diff / count, 2)) + '/5')
