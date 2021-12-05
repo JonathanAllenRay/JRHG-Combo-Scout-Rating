@@ -3,27 +3,31 @@ import json
 import sys
 
 def main():
-    file1 = open('test_data.txt', 'r')
-    count = 0
-    while True:
-        count += 1
-     
-        # Get next line from file
-        line = file1.readline()
+    if sys.argv[1] == 'file':
+        file1 = open(sys.argv[2], 'r')
+        while True:
+            # Get next line from file
+            line = file1.readline()
 
-        # if line is empty
-        # end of file is reached
-        if not line:
-            break
+            # if line is empty
+            # end of file is reached
+            if not line:
+                break
 
-        log = Log(id_from_logs_url(line))
+            log = Log(id_from_logs_url(line))
+            scout_medic_combos = log.get_scout_medic_combos()
+            for scout in scout_medic_combos:
+                score = Score(line, scout)
+                score.calculate_score()
+                score.print_data()
+        file1.close()
+    else:
+        log = Log(id_from_logs_url(sys.argv[1]))
         scout_medic_combos = log.get_scout_medic_combos()
         for scout in scout_medic_combos:
-            score = Score(line, scout)
+            score = Score(sys.argv[1], scout)
             score.calculate_score()
             score.print_data()
-    file1.close()
-    #calculate_score(sys.argv[1])
 
 class Score(object):
 
