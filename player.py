@@ -1,10 +1,10 @@
-from api import Log, id_from_logs_url
+from api import Log, LogList, id_from_logs_url
 from score import Score
 import json
 import sys
 
 def main():
-    file1 = open(sys.argv[1], 'r')
+    log_number = 0
     count = 0
     score_total = 0.0
     damage_efficiency = 0.0
@@ -16,19 +16,15 @@ def main():
     damage = 0.0
     kill_participation = 0.0
     heal_efficiency = 0.0
-    while True:
-        # Get next line from file
-        line = file1.readline()
-
-        # if line is empty
-        # end of file is reached
-        if not line:
-            break
-
-        log = Log(id_from_logs_url(line))
-        scout_medic_combos = log.get_scout_medic_combos()
-        for scout in scout_medic_combos:
-            score = Score(line, scout)
+    log_list = LogList(player=sys.argv[1], limit=sys.argv[2], offset=sys.argv[3])
+    other_steam_id = sys.argv[4]
+    for log in log_list.logs:
+        log_number += 1
+        print('Log # ' + str(log_number) + '/' + str(len(log_list.logs)))
+        next_log = Log(log['id'])
+        scout_medic_combos = next_log.get_scout_medic_combos()
+        if other_steam_id in scout_medic_combos.keys():
+            score = Score('', other_steam_id, log=next_log)
             score.calculate_score()
             count += 1
             score_total += score.score
@@ -51,7 +47,5 @@ def main():
     print('Kill Participation: ' + str(round(kill_participation / count, 2)) + '/10')
     print('Heal Efficiency: ' + str(round(heal_efficiency / count, 2)) + '/5')
     print('Score: ' + str(round(score_total / count, 2)) + '/100' + '\n')
-    file1.close()
-
 
 main()

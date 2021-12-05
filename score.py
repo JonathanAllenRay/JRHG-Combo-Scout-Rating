@@ -28,16 +28,16 @@ class Score(object):
 
     def print_data(self):
         print(self.get_alias())
-        print('Damage Efficiency: ' + str(self.damage_efficiency) + '/25')
-        print('Kill/Death: ' + str(self.kill_death) + '/25')
-        print('Med Diff: ' + str(self.med_diff) + '/5')
-        print('Med Diff Ratio: ' + str(self.med_diff_ratio) + '/5')
-        print('Round Diff: ' + str(self.round_diff) + '/5')
-        print('Frags: ' + str(self.frags) + '/10')
-        print('Damage: ' + str(self.damage) + '/10')
-        print('Kill Participation: ' + str(self.kill_participation) + '/10')
-        print('Heal Efficiency: ' + str(self.heal_efficiency) + '/5')
-        print('Score: ' + str(self.score) + '/100' + '\n') 
+        print('Damage Efficiency: ' + str(round(self.damage_efficiency, 2)) + '/25')
+        print('Kill/Death: ' + str(round(self.kill_death, 2)) + '/25')
+        print('Med Survivability: ' + str(round(self.med_diff, 2)) + '/5')
+        print('Med Survivability (Ratio): ' + str(round(self.med_diff_ratio, 2)) + '/5')
+        print('Round Diff: ' + str(round(self.round_diff, 2)) + '/5')
+        print('Frags: ' + str(round(self.frags, 2)) + '/10')
+        print('Damage: ' + str(round(self.damage, 2)) + '/10')
+        print('Kill Participation: ' + str(round(self.kill_participation, 2)) + '/10')
+        print('Heal Efficiency: ' + str(round(self.heal_efficiency, 2)) + '/5')
+        print('Score: ' + str(round(self.score, 2)) + '/100' + '\n') 
 
     def calculate_score(self):
         scout_medic_combos = self.log.get_scout_medic_combos()
@@ -52,7 +52,7 @@ class Score(object):
         self.score = self.damage_efficiency + self.kill_death + self.med_diff + self.round_diff + self.frags + self.damage + self.kill_participation
         self.heal_efficiency = self.calculate_heal_percent_effiency_score(scout_medic_combos[self.player], self.score)
         self.score += self.heal_efficiency 
-        adjust_for_daniel_z()
+        #self.adjust_for_daniel_z()
 
     def adjust_for_daniel_z(self):
         if self.player == '[U:1:107876215]':
@@ -96,8 +96,17 @@ class Score(object):
             if scout != self.player:
                 enemy_medic = scout_medic_combos[scout]
 
-        friendly_medic_deaths = self.log.players[friendly_medic]['deaths']
-        enemy_medic_deaths = self.log.players[enemy_medic]['deaths']
+        friendly_medic_deaths = 0
+        enemy_medic_deaths = 0
+        if friendly_medic in self.log.players.keys():
+            friendly_medic_deaths = self.log.players[friendly_medic]['deaths']
+        else:
+            return self.scale_score(-5, 5, 5, 0)
+        if enemy_medic in self.log.players.keys():
+            enemy_medic_deaths = self.log.players[enemy_medic]['deaths']
+        else:
+            return self.scale_score(-5, 5, 5, 0)
+
         return self.scale_score(-5, 5, 5, enemy_medic_deaths - friendly_medic_deaths)
 
     def calculate_med_diff_ratio_score(self, scout_medic_combos):
@@ -107,8 +116,17 @@ class Score(object):
             if scout != self.player:
                 enemy_medic = scout_medic_combos[scout]
 
-        friendly_medic_deaths = self.log.players[friendly_medic]['deaths']
-        enemy_medic_deaths = self.log.players[enemy_medic]['deaths']
+        friendly_medic_deaths = 0
+        enemy_medic_deaths = 0
+        if friendly_medic in self.log.players.keys():
+            friendly_medic_deaths = self.log.players[friendly_medic]['deaths']
+        else:
+            return self.scale_score(-5, 5, 5, 0)
+        if enemy_medic in self.log.players.keys():
+            enemy_medic_deaths = self.log.players[enemy_medic]['deaths']
+        else:
+            return self.scale_score(-5, 5, 5, 0)
+
         if (friendly_medic_deaths + enemy_medic_deaths) == 0:
             return 5
         return self.scale_score(0.0, 1.0, 5, 1.0 - ((friendly_medic_deaths) / (friendly_medic_deaths + enemy_medic_deaths)))

@@ -36,7 +36,7 @@ class Log(object):
         return scout_medic_combos
 
     def played_scout(self, player):
-        if self.players[player]['class_stats'][0]['type'] == 'scout':
+        if player in self.players.keys() and self.players[player]['class_stats'][0]['type'] == 'scout':
             return True
         else:
             return False    
