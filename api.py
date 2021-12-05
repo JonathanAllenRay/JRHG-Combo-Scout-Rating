@@ -23,6 +23,24 @@ class Log(object):
         data = requests.get(url)
         self.__dict__ = data.json()
 
+    def get_scout_medic_combos(self):
+        scout_medic_combos = dict()
+        for medic in self.healspread:
+            top_heal_scout = ''
+            top_heal = 0
+            for player in self.healspread[medic]:
+                if self.healspread[medic][player] > top_heal and self.played_scout(player):
+                    top_heal = self.healspread[medic][player]
+                    top_heal_scout = player
+            scout_medic_combos[top_heal_scout] = medic
+        return scout_medic_combos
+
+    def played_scout(self, player):
+        if self.players[player]['class_stats'][0]['type'] == 'scout':
+            return True
+        else:
+            return False    
+
 class LogUploader(object):
 
     def __init__(self, title, tfmap, key, logfile=None, file_path=None, uploader="LogsTFAPIWrapper", updatelog=None):
