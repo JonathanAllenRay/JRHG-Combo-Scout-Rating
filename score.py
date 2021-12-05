@@ -40,19 +40,33 @@ class Score(object):
         print('Score: ' + str(self.score) + '/100' + '\n') 
 
     def calculate_score(self):
-        if self.player != '[U:1:107876215]':
-            scout_medic_combos = self.log.get_scout_medic_combos()
-            self.damage_efficiency = self.calculate_damage_efficiency_score()
-            self.kill_death = self.calculate_kd_score()
-            self.med_diff = self.calculate_med_diff_score(scout_medic_combos)
-            self.med_diff_ratio = self.calculate_med_diff_ratio_score(scout_medic_combos)
-            self.round_diff = self.calculate_round_diff_score()
-            self.frags = self.calculate_frag_score()
-            self.damage = self.calculate_damage_score()
-            self.kill_participation = self.calculate_kill_participation_score()
-            self.score = self.damage_efficiency + self.kill_death + self.med_diff + self.round_diff + self.frags + self.damage + self.kill_participation
-            self.heal_efficiency = self.calculate_heal_percent_effiency_score(scout_medic_combos[self.player], self.score)
-            self.score += self.heal_efficiency 
+        scout_medic_combos = self.log.get_scout_medic_combos()
+        self.damage_efficiency = self.calculate_damage_efficiency_score()
+        self.kill_death = self.calculate_kd_score()
+        self.med_diff = self.calculate_med_diff_score(scout_medic_combos)
+        self.med_diff_ratio = self.calculate_med_diff_ratio_score(scout_medic_combos)
+        self.round_diff = self.calculate_round_diff_score()
+        self.frags = self.calculate_frag_score()
+        self.damage = self.calculate_damage_score()
+        self.kill_participation = self.calculate_kill_participation_score()
+        self.score = self.damage_efficiency + self.kill_death + self.med_diff + self.round_diff + self.frags + self.damage + self.kill_participation
+        self.heal_efficiency = self.calculate_heal_percent_effiency_score(scout_medic_combos[self.player], self.score)
+        self.score += self.heal_efficiency 
+        adjust_for_daniel_z()
+
+    def adjust_for_daniel_z(self):
+        if self.player == '[U:1:107876215]':
+            self.damage_efficiency = 0.0
+            self.kill_death = -1.0
+            self.med_diff = -69.69
+            self.med_diff_ratio = -420.69
+            self.round_diff = -80085.69
+            self.frags = 0.0001
+            self.damage = 0.0
+            self.kill_participation = -9000.69420
+            self.heal_efficiency = -101.01 
+            self.score = self.damage_efficiency + self.kill_death + self.med_diff + self.round_diff + self.frags + self.damage + self.kill_participation + self.heal_efficiency
+
 
     def scale_score(self, min_value, max_value, max_result, value):
         if value <= min_value:
