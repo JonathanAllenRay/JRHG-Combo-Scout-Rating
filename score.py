@@ -40,18 +40,19 @@ class Score(object):
         print('Score: ' + str(self.score) + '/100' + '\n') 
 
     def calculate_score(self):
-        scout_medic_combos = self.log.get_scout_medic_combos()
-        self.damage_efficiency = self.calculate_damage_efficiency_score()
-        self.kill_death = self.calculate_kd_score()
-        self.med_diff = self.calculate_med_diff_score(scout_medic_combos)
-        self.med_diff_ratio = self.calculate_med_diff_ratio_score(scout_medic_combos)
-        self.round_diff = self.calculate_round_diff_score()
-        self.frags = self.calculate_frag_score()
-        self.damage = self.calculate_damage_score()
-        self.kill_participation = self.calculate_kill_participation_score()
-        self.score = self.damage_efficiency + self.kill_death + self.med_diff + self.round_diff + self.frags + self.damage + self.kill_participation
-        self.heal_efficiency = self.calculate_heal_percent_effiency_score(scout_medic_combos[self.player], self.score)
-        self.score += self.heal_efficiency 
+        if self.player != '[U:1:107876215]':
+            scout_medic_combos = self.log.get_scout_medic_combos()
+            self.damage_efficiency = self.calculate_damage_efficiency_score()
+            self.kill_death = self.calculate_kd_score()
+            self.med_diff = self.calculate_med_diff_score(scout_medic_combos)
+            self.med_diff_ratio = self.calculate_med_diff_ratio_score(scout_medic_combos)
+            self.round_diff = self.calculate_round_diff_score()
+            self.frags = self.calculate_frag_score()
+            self.damage = self.calculate_damage_score()
+            self.kill_participation = self.calculate_kill_participation_score()
+            self.score = self.damage_efficiency + self.kill_death + self.med_diff + self.round_diff + self.frags + self.damage + self.kill_participation
+            self.heal_efficiency = self.calculate_heal_percent_effiency_score(scout_medic_combos[self.player], self.score)
+            self.score += self.heal_efficiency 
 
     def scale_score(self, min_value, max_value, max_result, value):
         if value <= min_value:
@@ -67,12 +68,12 @@ class Score(object):
     def calculate_damage_efficiency_score(self):
         damage_done = self.player_stat('dmg')
         damage_taken = self.player_stat('dt')
-        return self.scale_score(0.5, 2, 25.0, damage_done / damage_taken)
+        return self.scale_score(0.5, 1.85, 25.0, damage_done / damage_taken)
 
     def calculate_kd_score(self):
         kills = self.player_stat('kills')
         deaths = self.player_stat('deaths')
-        return self.scale_score(0.5, 3.0, 25.0, float(kills) / deaths)
+        return self.scale_score(0.5, 2.85, 25.0, float(kills) / deaths)
 
     def calculate_med_diff_score(self, scout_medic_combos):
         friendly_medic = scout_medic_combos[self.player]
@@ -81,8 +82,8 @@ class Score(object):
             if scout != self.player:
                 enemy_medic = scout_medic_combos[scout]
 
-        friendly_medic_deaths = self.player_stat('deaths')
-        enemy_medic_deaths = self.player_stat('deaths')
+        friendly_medic_deaths = self.log.players[friendly_medic]['deaths']
+        enemy_medic_deaths = self.log.players[enemy_medic]['deaths']
         return self.scale_score(-5, 5, 5, enemy_medic_deaths - friendly_medic_deaths)
 
     def calculate_med_diff_ratio_score(self, scout_medic_combos):
@@ -92,8 +93,8 @@ class Score(object):
             if scout != self.player:
                 enemy_medic = scout_medic_combos[scout]
 
-        friendly_medic_deaths = self.player_stat('deaths')
-        enemy_medic_deaths = self.player_stat('deaths')
+        friendly_medic_deaths = self.log.players[friendly_medic]['deaths']
+        enemy_medic_deaths = self.log.players[enemy_medic]['deaths']
         if (friendly_medic_deaths + enemy_medic_deaths) == 0:
             return 5
         return self.scale_score(0.0, 1.0, 5, 1.0 - ((friendly_medic_deaths) / (friendly_medic_deaths + enemy_medic_deaths)))
@@ -114,22 +115,22 @@ class Score(object):
         red_kills = self.log.teams['Red']['kills']
         blue_kills = self.log.teams['Blue']['kills']
         kills = self.player_stat('kills')
-        return self.scale_score(.03, .18, 10, float(kills) / (red_kills + blue_kills))
+        return self.scale_score(.03, .21, 10, float(kills) / (red_kills + blue_kills))
 
     def calculate_damage_score(self):
         red_dmg = self.log.teams['Red']['dmg']
         blue_dmg = self.log.teams['Blue']['dmg']
         dmg = self.player_stat('dmg')
-        return self.scale_score(.03, .15, 10, float(dmg) / (red_dmg + blue_dmg))
+        return self.scale_score(.03, .17, 10, float(dmg) / (red_dmg + blue_dmg))
 
     def calculate_kill_participation_score(self):
         team_kills = self.log.teams[self.player_stat('team')]['kills']
         kills = self.player_stat('kills')
         assists = self.player_stat('assists')
-        return self.scale_score(.1, .5, 10, float(kills + assists) / team_kills)
+        return self.scale_score(.05, .66, 10, float(kills + assists) / team_kills)
 
     def calculate_heal_percent_effiency_score(self, medic, other_score):
-        return self.scale_score(.75, 3.0, 5.0, float(other_score) / self.get_heal_percent(medic))
+        return self.scale_score(.70, 3.2, 5.0, float(other_score) / self.get_heal_percent(medic))
 
     def get_heal_percent(self, medic):
         heals_received = self.player_stat('hr')
