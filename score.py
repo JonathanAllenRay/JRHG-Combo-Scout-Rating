@@ -2,10 +2,10 @@ from api import Log, id_from_logs_url
 import json
 import sys
 
-
-
 def main():
-    print(id_from_logs_url('https://logs.tf/3081672#76561197970669109'))
+    calculate_score(sys.argv[1])
+
+def calculate_score(url):
     log = Log(id_from_logs_url(sys.argv[1]))
     scout_medic_combos = get_combos(log)
     for scout in scout_medic_combos:
