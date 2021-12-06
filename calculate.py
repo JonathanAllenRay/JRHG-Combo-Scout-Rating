@@ -27,7 +27,6 @@ def main():
         log = Log(id_from_logs_url(sys.argv[1]))
         combo_scouts = log.get_played_class('scout', 'Red', 'combo')
         combo_scouts += log.get_played_class('scout', 'Blue', 'combo')
-        print(combo_scouts)
         for scout in combo_scouts:
             score = CSScore(sys.argv[1], scout)
             score.calculate_score()

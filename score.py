@@ -114,7 +114,9 @@ class Score(object):
         return self.log.players[self.player][stat]
 
     def get_alias(self):
-        return self.log.names[self.player]
+        if self.player in self.log.names:
+            return self.log.names[self.player]
+        return 'No Alias Found'
 
 
 class CSScore(Score):
@@ -156,6 +158,7 @@ class CSScore(Score):
     def print_data(self, divisor=1.0):
         if divisor <= 0:
             divisor = 1
+        self.print_alias()
         print('Damage Efficiency: ' + str(round(self.damage_efficiency / divisor, ROUNDING_PLACES)) + '/' + str(CSScore.DE_TOTAL))
         print('Kill/Death: ' + str(round(self.kill_death / divisor, ROUNDING_PLACES)) + '/' + str(CSScore.KD_TOTAL))
         print('Med Survivability: ' + str(round(self.med_diff / divisor, ROUNDING_PLACES)) + '/' + str(CSScore.MED_DIFF_TOTAL))
@@ -269,6 +272,7 @@ class DMScore(Score):
     def print_data(self, divisor=1.0):
         if divisor <= 0:
             divisor = 1
+        self.print_alias()
         print('Damage Efficiency: ' + str(round(self.damage_efficiency / divisor, ROUNDING_PLACES)) + '/' + str(DMScore.DE_TOTAL))
         print('Kill/Death: ' + str(round(self.kill_death / divisor, ROUNDING_PLACES)) + '/' + str(DMScore.KD_TOTAL))
         print('Round Diff: ' + str(round(self.round_diff / divisor, ROUNDING_PLACES)) + '/' + str(DMScore.ROUND_DIFF_TOTAL))
