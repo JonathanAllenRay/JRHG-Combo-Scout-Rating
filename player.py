@@ -25,7 +25,7 @@ def main():
             for scout in combo_scouts:
                 if player == scout and log.game_type() == "6":
                     print("Calculating log " + line)
-                    score = Score(line, player)
+                    score = CSScore(line, player)
                     score.calculate_score()
                     count += 1
                     score_total += score
@@ -38,8 +38,8 @@ def main():
             log_number += 1
             print('Log # ' + str(log_number) + '/' + str(len(log_list.logs)))
             next_log = Log(log['id'])
-            combo_scouts = log.get_played_class('scout', 'Red', 'combo')
-            combo_scouts += log.get_played_class('scout', 'Blue', 'combo')
+            combo_scouts = next_log.get_played_class('scout', 'Red', 'combo')
+            combo_scouts += next_log.get_played_class('scout', 'Blue', 'combo')
             if other_steam_id in combo_scouts and next_log.game_type() == "6":
                 score = CSScore('', other_steam_id, log=next_log)
                 score.calculate_score()

@@ -65,7 +65,7 @@ class Score(object):
         kills = self.player_stat('kills')
         deaths = self.player_stat('deaths')
         if deaths == 0:
-            return KD_MAX
+            return maximum
         return self.scale_score(minimum, maximum, total, float(kills) / deaths)
 
     def calculate_round_diff_score(self, minimum, maximum, total):
@@ -114,7 +114,7 @@ class Score(object):
         return self.log.players[self.player][stat]
 
     def get_alias(self):
-        if self.player in self.log.names:
+        if self.log != None and self.player in self.log.names:
             return self.log.names[self.player]
         return 'No Alias Found'
 

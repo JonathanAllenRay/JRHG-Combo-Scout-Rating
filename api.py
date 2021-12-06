@@ -47,7 +47,7 @@ class Log(object):
             bot_heal = 99999999
             for player in result:
                 medic = self.get_players_med(player)
-                if self.healspread[medic][player] < bot_heal:
+                if medic != '' and player != '' and self.healspread[medic][player] < bot_heal:
                     bot_heal = self.healspread[medic][player]
                     bot_heal_player = player
             if bot_heal_player != '':
@@ -57,8 +57,8 @@ class Log(object):
             top_heal_player = ''
             top_heal = 0
             for player in result:
-                medic = self.get_players_med(player)
-                if self.healspread[medic][player] > top_heal:
+                medic = self.get_players_med(player)                        
+                if medic != '' and player != '' and self.healspread[medic][player] > top_heal:
                     top_heal = self.healspread[medic][player]
                     top_heal_player = player
             if top_heal_player != '':
@@ -94,8 +94,8 @@ class Log(object):
             total_time = self.length
             play_time = 0
             for player in self.players:
-                for element in class_stats:
-                    play_time += element[total_time]
+                for element in self.players[player]['class_stats']:
+                    play_time += element['total_time']
                 if (total_time / 2) > play_time:
                     players -= 1
             if players == 12 or players == 13:
