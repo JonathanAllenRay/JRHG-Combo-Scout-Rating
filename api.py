@@ -32,8 +32,40 @@ class Log(object):
                 if self.healspread[medic][player] > top_heal and self.played_scout(player):
                     top_heal = self.healspread[medic][player]
                     top_heal_scout = player
-            scout_medic_combos[top_heal_scout] = medic
+            if top_heal_scout != '':
+                scout_medic_combos[top_heal_scout] = medic
         return scout_medic_combos
+
+    #return ID:TEAM
+    def get_played_class(self, played_class, team, role=None):
+        result = []
+        for player in self.players:
+            if self.players[player]['class_stats'][0]['type'] == played_class and self.players[player]['team'] == team:
+                result.append(player)
+        if role == 'flank':
+            bot_heal_player = ''
+            bot_heal = 99999999
+            for player in result:
+                medic = self.get_players_med(player)
+                if self.healspread[medic][player] < bot_heal:
+                    bot_heal = self.healspread[medic][player]
+                    bot_heal_player = player
+            if bot_heal_player != '':
+                result = []
+                result.append(bot_heal_player)
+        elif role == 'combo':
+            top_heal_player = ''
+            top_heal = 0
+            for player in result:
+                medic = self.get_players_med(player)
+                if self.healspread[medic][player] > top_heal:
+                    top_heal = self.healspread[medic][player]
+                    top_heal_player = player
+            if top_heal_player != '':
+                result = []
+                result.append(top_heal_player)
+
+        return result
 
     def played_scout(self, player):
         if player in self.players.keys() and self.players[player]['class_stats'][0]['type'] == 'scout':
@@ -41,10 +73,18 @@ class Log(object):
         else:
             return False    
 
+    def get_players_med(self, player):
+        primary_medic = ''
+        top_heal = 0
+        for medic in self.healspread:
+            if player in self.healspread[medic] and self.healspread[medic][player] > top_heal:
+                top_heal = self.healspread[medic][player]
+                primary_medic = medic
+        return primary_medic
+
     def game_type(self):
         players = len(self.players)
         if players >= 18:
-            print("HL ALERT")
             return "HL"
         elif players == 4 or players == 5:
             return "ULTIDUO"

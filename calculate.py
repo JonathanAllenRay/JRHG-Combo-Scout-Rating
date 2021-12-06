@@ -1,5 +1,5 @@
 from api import Log, id_from_logs_url
-from score import Score
+from score import Score, CSScore, DMScore
 import json
 import sys
 
@@ -16,17 +16,20 @@ def main():
                 break
 
             log = Log(id_from_logs_url(line))
-            scout_medic_combos = log.get_scout_medic_combos()
-            for scout in scout_medic_combos:
-                score = Score(line, scout)
+            combo_scouts = log.get_played_class('scout', 'Red', 'combo')
+            combo_scouts += log.get_played_class('scout', 'Blue', 'combo')
+            for scout in combo_scouts:
+                score = CSScore(line, scout)
                 score.calculate_score()
                 score.print_data()
         file1.close()
     else:
         log = Log(id_from_logs_url(sys.argv[1]))
-        scout_medic_combos = log.get_scout_medic_combos()
-        for scout in scout_medic_combos:
-            score = Score(sys.argv[1], scout)
+        combo_scouts = log.get_played_class('scout', 'Red', 'combo')
+        combo_scouts += log.get_played_class('scout', 'Blue', 'combo')
+        print(combo_scouts)
+        for scout in combo_scouts:
+            score = CSScore(sys.argv[1], scout)
             score.calculate_score()
             score.print_data()
 
