@@ -41,6 +41,28 @@ class Log(object):
         else:
             return False    
 
+    def game_type(self):
+        players = len(self.players)
+        if players >= 18:
+            print("HL ALERT")
+            return "HL"
+        elif players == 4 or players == 5:
+            return "ULTIDUO"
+        elif players == 12 or players == 13:
+            return "6"
+        else:
+            total_time = self.length
+            play_time = 0
+            for player in self.players:
+                for element in class_stats:
+                    play_time += element[total_time]
+                if (total_time / 2) > play_time:
+                    players -= 1
+            if players == 12 or players == 13:
+                return "6"
+            else:
+                return "OTHER"
+
 class LogUploader(object):
 
     def __init__(self, title, tfmap, key, logfile=None, file_path=None, uploader="LogsTFAPIWrapper", updatelog=None):
